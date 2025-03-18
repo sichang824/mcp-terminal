@@ -90,6 +90,23 @@ make run-applescript  # 使用AppleScript控制器
 make run-subprocess   # 使用Subprocess控制器
 ```
 
+### Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "terminal": {
+      "command": "/Users/ann/Workspace/mcp-terminal/.venv/bin/python",
+      "args": [
+        "/Users/ann/Workspace/mcp-terminal/mcp_terminal.py",
+        "--controller",
+        "subprocess"
+      ]
+    }
+  }
+}
+```
+
 ### 命令行选项
 
 服务器支持多种命令行选项：
