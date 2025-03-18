@@ -1,0 +1,1 @@
+"""MCP Terminal package."""

@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mcp-terminal"
+version = "0.1.0"
+description = "MCP Terminal Server for controlling terminal operations"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [
+    { name = "MCP Terminal Developer" }
+]
+dependencies = [
+    "pydantic==2.10.4",
+    "mcp[cli]>=1.4.1",
+]
+
+[project.optional-dependencies]
+iterm = ["iterm2>=1.0.0"]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mcp_terminal"]
+
+[tool.black]
+line-length = 88
+target-version = ["py38"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
