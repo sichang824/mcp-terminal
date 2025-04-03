@@ -112,10 +112,27 @@ class MCPTerminalServer:
         """
         Clean up resources before shutting down.
         """
+        logger.info("Starting cleanup process")
+        
+        # First ensure MCP resources are properly cleaned up
+        if hasattr(self.mcp, "_mcp_server") and hasattr(self.mcp._mcp_server, "_task_group"):
+            logger.info("Ensuring MCP task groups are properly closed")
+            try:
+                # Give in-flight requests a chance to complete
+                await asyncio.sleep(0.1)
+            except Exception as e:
+                logger.warning(f"Error during MCP cleanup delay: {e}")
+        
+        # Then clean up tool controllers
         for tool_name, tool in self.tools.items():
             if hasattr(tool, "controller") and hasattr(tool.controller, "cleanup"):
                 logger.info(f"Cleaning up {tool_name} controller")
-                await tool.controller.cleanup()
+                try:
+                    await tool.controller.cleanup()
+                except Exception as e:
+                    logger.warning(f"Error cleaning up {tool_name} controller: {e}")
+        
+        logger.info("Cleanup process completed")
 
 
 def main() -> None:
@@ -219,7 +236,11 @@ def main() -> None:
         logger.info("Received keyboard interrupt")
         # Handle KeyboardInterrupt manually by running the shutdown coroutine
         if not shutdown_in_progress:
-            loop.run_until_complete(handle_shutdown())
+            try:
+                # Make sure we properly shut down even if interrupted
+                loop.run_until_complete(handle_shutdown())
+            except Exception as e:
+                logger.error(f"Error during shutdown after keyboard interrupt: {e}")
     except Exception as e:
         logger.error(f"Error during server execution: {e}", exc_info=True)
     finally:
@@ -258,6 +279,9 @@ async def shutdown(loop, server):
     """Handle graceful shutdown."""
     logger.info("Shutdown signal received")
 
+    # Give pending tasks a chance to complete
+    await asyncio.sleep(0.2)
+    
     # Perform cleanup
     await server.cleanup()
 
@@ -271,10 +295,12 @@ async def shutdown(loop, server):
         # Wait for tasks to cancel with a timeout
         try:
             await asyncio.wait_for(
-                asyncio.gather(*tasks, return_exceptions=True), timeout=2.0
+                asyncio.gather(*tasks, return_exceptions=True), timeout=3.0  # Increased timeout
             )
         except asyncio.TimeoutError:
             logger.warning("Some tasks did not cancel within the timeout period")
+        except Exception as e:
+            logger.warning(f"Error during task cancellation: {e}")
 
     # Stop the loop
     loop.stop()
