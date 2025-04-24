@@ -8,7 +8,7 @@ Provides file operations through the MCP interface.
 import logging
 import os
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, Field
@@ -26,23 +26,6 @@ class WriteMode(str, Enum):
     OVERWRITE = "overwrite"  # Overwrite the entire file
     APPEND = "append"  # Append to the end of the file
     INSERT = "insert"  # Insert at a specific position
-
-
-# Define the models for the write_file function
-class WriteFileRequest(BaseModel):
-    """Request model for writing to a file."""
-
-    filepath: str = Field(..., description="Path to the file to write")
-    content: str = Field(..., description="Content to write to the file")
-    mode: WriteMode = Field(
-        WriteMode.OVERWRITE, description="Writing mode (overwrite, append, or insert)"
-    )
-    position: Optional[int] = Field(
-        None, description="Position to insert content (only used with insert mode)"
-    )
-    create_dirs: bool = Field(
-        True, description="Create parent directories if they don't exist"
-    )
 
 
 class FileOperationResponse(BaseModel):
