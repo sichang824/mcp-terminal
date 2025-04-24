@@ -17,6 +17,7 @@ from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 
+from mcp_terminal.tools.file import FileTool
 from mcp_terminal.tools.terminal import TerminalTool
 
 # Configure logging
@@ -82,8 +83,11 @@ class MCPTerminalServer:
         try:
             # Create and register the terminal tool
             terminal_tool = TerminalTool(self.controller_type)
+            file_tool = FileTool()
             terminal_tool.register_mcp(self.mcp)
+            file_tool.register_mcp(self.mcp)
             self.tools["terminal"] = terminal_tool
+            self.tools["file"] = file_tool
 
             self.tools_registered = True
             logger.info("Terminal tool registered with MCP server")
@@ -113,16 +117,18 @@ class MCPTerminalServer:
         Clean up resources before shutting down.
         """
         logger.info("Starting cleanup process")
-        
+
         # First ensure MCP resources are properly cleaned up
-        if hasattr(self.mcp, "_mcp_server") and hasattr(self.mcp._mcp_server, "_task_group"):
+        if hasattr(self.mcp, "_mcp_server") and hasattr(
+            self.mcp._mcp_server, "_task_group"
+        ):
             logger.info("Ensuring MCP task groups are properly closed")
             try:
                 # Give in-flight requests a chance to complete
                 await asyncio.sleep(0.1)
             except Exception as e:
                 logger.warning(f"Error during MCP cleanup delay: {e}")
-        
+
         # Then clean up tool controllers
         for tool_name, tool in self.tools.items():
             if hasattr(tool, "controller") and hasattr(tool.controller, "cleanup"):
@@ -131,7 +137,7 @@ class MCPTerminalServer:
                     await tool.controller.cleanup()
                 except Exception as e:
                     logger.warning(f"Error cleaning up {tool_name} controller: {e}")
-        
+
         logger.info("Cleanup process completed")
 
 
@@ -281,7 +287,7 @@ async def shutdown(loop, server):
 
     # Give pending tasks a chance to complete
     await asyncio.sleep(0.2)
-    
+
     # Perform cleanup
     await server.cleanup()
 
@@ -295,7 +301,8 @@ async def shutdown(loop, server):
         # Wait for tasks to cancel with a timeout
         try:
             await asyncio.wait_for(
-                asyncio.gather(*tasks, return_exceptions=True), timeout=3.0  # Increased timeout
+                asyncio.gather(*tasks, return_exceptions=True),
+                timeout=3.0,  # Increased timeout
             )
         except asyncio.TimeoutError:
             logger.warning("Some tasks did not cancel within the timeout period")
