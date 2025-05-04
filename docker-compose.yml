@@ -1,0 +1,10 @@
+services:
+  mcp-terminal:
+    build: .
+    container_name: mcp-terminal
+    volumes:
+      - .:/workspace
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1

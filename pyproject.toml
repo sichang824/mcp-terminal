@@ -7,14 +7,14 @@ name = "mcp-terminal"
 version = "0.1.0"
 description = "MCP Terminal Server for controlling terminal operations"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
     { name = "MCP Terminal Developer" }
 ]
 dependencies = [
+    "mcp[cli]>=1.7.1",
     "pydantic==2.10.4",
-    "mcp[cli]>=1.4.1",
 ]
 
 [project.optional-dependencies]
@@ -30,8 +30,14 @@ packages = ["src/mcp_terminal"]
 
 [tool.black]
 line-length = 88
-target-version = ["py38"]
+target-version = ["py310"]
 
 [tool.isort]
 profile = "black"
 line_length = 88
+
+[project.scripts]
+mcp-terminal = "mcp_terminal.server:main"
+
+[tool.uv]
+package = true
