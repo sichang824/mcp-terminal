@@ -143,6 +143,47 @@ docker run -p 8000:8000 -v $(pwd):/workspace mcp-terminal
 
 您可以通过修改 Dockerfile 或 docker-compose.yml 文件来自定义配置。
 
+### 在 Claude 或其他 AI 中使用 Docker 容器作为 MCP 服务
+
+您可以将 Docker 容器配置为 MCP 服务，使 Claude 或其他支持 MCP 的 AI 可以直接使用容器化的工具。以下是在 Claude 配置文件中使用 Docker 容器作为 MCP 服务的示例：
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "terminal": {
+        "command": "docker",
+        "args": [
+          "run",
+          "--rm",
+          "-i",
+          "--mount",
+          "type=bind,src=${workspaceFolder},dst=/workspace",
+          "mcp-terminal",
+          "mcp-terminal",
+          "--mode",
+          "sse",
+          "--host",
+          "0.0.0.0",
+          "--port",
+          "8000"
+        ]
+      }
+    }
+  }
+}
+```
+
+这种配置允许：
+
+- 通过 Docker 容器隔离工具执行环境
+- 无需在本地安装特定工具即可使用其功能
+- 在不同环境中保持一致的工具版本和配置
+- 使用 `${workspaceFolder}` 变量将当前工作目录挂载到容器中
+- 通过 `--rm` 标志确保容器使用后自动删除，保持环境清洁
+
+您可以根据需要定义多个不同的 MCP 服务容器，每个容器专注于特定的功能。
+
 ### Claude Desktop 集成配置示例
 
 以下是 Claude Desktop 的配置示例：

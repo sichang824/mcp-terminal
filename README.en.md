@@ -143,6 +143,47 @@ Default configuration:
 
 You can customize the configuration by modifying the Dockerfile or docker-compose.yml file.
 
+### Using Docker Containers as MCP Services with Claude or Other AI Tools
+
+You can configure Docker containers as MCP services, allowing Claude or other MCP-compatible AI tools to use containerized tools directly. Here's an example of using Docker containers as MCP services in a Claude configuration file:
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "terminal": {
+        "command": "docker",
+        "args": [
+          "run",
+          "--rm",
+          "-i",
+          "--mount",
+          "type=bind,src=${workspaceFolder},dst=/workspace",
+          "mcp-terminal",
+          "mcp-terminal",
+          "--mode",
+          "sse",
+          "--host",
+          "0.0.0.0",
+          "--port",
+          "8000"
+        ]
+      }
+    }
+  }
+}
+```
+
+This configuration offers several benefits:
+
+- Isolates tool execution environments using Docker containers
+- Eliminates the need to install specific tools locally
+- Maintains consistent tool versions and configurations across different environments
+- Uses the `${workspaceFolder}` variable to mount the current working directory into the container
+- Ensures containers are automatically removed after use with the `--rm` flag, keeping the environment clean
+
+You can define multiple different MCP service containers as needed, each focused on specific functionality.
+
 ### Claude Desktop Integration Configuration Example
 
 Here's an example configuration for Claude Desktop:
