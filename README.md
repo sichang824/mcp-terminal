@@ -17,6 +17,7 @@ MCP Terminal 是一个基于 MCP（Model Context Protocol）的终端控制服�
   - **文件工具**：进行文件操作（读写、追加、插入）
 - 自动检测最佳终端控制器
 - 与 Claude Desktop 无缝集成
+- 支持 Docker 部署
 
 ## 安装
 
@@ -71,6 +72,31 @@ make setup-iterm
 make setup-dev
 ```
 
+### 使用 Docker 安装
+
+我们提供了 Docker 支持，可以快速部署 MCP Terminal 服务器：
+
+```bash
+# 构建 Docker 镜像
+docker build -t mcp-terminal .
+
+# 运行 Docker 容器（SSE模式，端口8000）
+docker run -p 8000:8000 mcp-terminal
+```
+
+或者使用 docker-compose：
+
+```bash
+# 启动服务
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
+```
+
 ## 使用方法
 
 ### 运行 MCP 终端服务器
@@ -92,6 +118,30 @@ make run-iterm     # 使用iTerm2控制器
 make run-applescript  # 使用AppleScript控制器
 make run-subprocess   # 使用Subprocess控制器
 ```
+
+### 使用 Docker 运行
+
+使用 Docker 运行 MCP Terminal 服务器（默认使用 SSE 模式和 Subprocess 控制器）：
+
+```bash
+# 直接运行
+docker run -p 8000:8000 mcp-terminal
+
+# 使用自定义端口
+docker run -p 9000:8000 mcp-terminal
+
+# 挂载当前目录（可访问本地文件）
+docker run -p 8000:8000 -v $(pwd):/workspace mcp-terminal
+```
+
+默认配置：
+
+- 服务器模式：SSE
+- 主机：0.0.0.0（允许远程连接）
+- 端口：8000
+- 控制器：subprocess（适合容器环境）
+
+您可以通过修改 Dockerfile 或 docker-compose.yml 文件来自定义配置。
 
 ### Claude Desktop 集成配置示例
 
@@ -242,6 +292,8 @@ mcp-terminal/
 ├── pyproject.toml             # 项目配置和依赖
 ├── README.md                  # 项目文档
 ├── Makefile                   # 构建和运行命令
+├── Dockerfile                 # Docker 构建配置
+├── docker-compose.yml         # Docker Compose 配置
 ├── src/
 │   ├── __init__.py
 │   └── mcp_terminal/

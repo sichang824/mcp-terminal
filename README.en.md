@@ -17,6 +17,7 @@ MCP Terminal is a terminal control server based on MCP (Model Context Protocol),
   - **File Tool**: Performs file operations (read, write, append, insert)
 - Automatically detects the best terminal controller
 - Seamless integration with Claude Desktop
+- Docker deployment support
 
 ## Installation
 
@@ -71,6 +72,31 @@ make setup-iterm
 make setup-dev
 ```
 
+### Installation using Docker
+
+We provide Docker support for quick deployment of the MCP Terminal server:
+
+```bash
+# Build the Docker image
+docker build -t mcp-terminal .
+
+# Run the Docker container (SSE mode, port 8000)
+docker run -p 8000:8000 mcp-terminal
+```
+
+Or use docker-compose:
+
+```bash
+# Start the service
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the service
+docker-compose down
+```
+
 ## Usage
 
 ### Running the MCP Terminal Server
@@ -92,6 +118,30 @@ make run-iterm     # Use iTerm2 controller
 make run-applescript  # Use AppleScript controller
 make run-subprocess   # Use Subprocess controller
 ```
+
+### Running with Docker
+
+Run the MCP Terminal server using Docker (defaults to SSE mode and Subprocess controller):
+
+```bash
+# Run directly
+docker run -p 8000:8000 mcp-terminal
+
+# Use a custom port
+docker run -p 9000:8000 mcp-terminal
+
+# Mount current directory (for local file access)
+docker run -p 8000:8000 -v $(pwd):/workspace mcp-terminal
+```
+
+Default configuration:
+
+- Server mode: SSE
+- Host: 0.0.0.0 (allows remote connections)
+- Port: 8000
+- Controller: subprocess (suitable for containerized environments)
+
+You can customize the configuration by modifying the Dockerfile or docker-compose.yml file.
 
 ### Claude Desktop Integration Configuration Example
 
@@ -242,6 +292,8 @@ mcp-terminal/
 ├── pyproject.toml             # Project configuration and dependencies
 ├── README.md                  # Project documentation
 ├── Makefile                   # Build and run commands
+├── Dockerfile                 # Docker build configuration
+├── docker-compose.yml         # Docker Compose configuration
 ├── src/
 │   ├── __init__.py
 │   └── mcp_terminal/
