@@ -1,6 +1,12 @@
+<div align="center">
+
 # MCP Terminal
 
 MCP Terminal 是一个基于 MCP（Model Context Protocol）的终端控制服务器，专为与大型语言模型（LLM）和 AI 助手集成而设计。它提供了一个标准化的接口，使 AI 可以执行终端命令并获取输出结果。
+
+[English](README.en.md) | 中文
+
+</div>
 
 ## 特性
 

@@ -1,6 +1,12 @@
+<div align="center">
+
 # MCP Terminal
 
 MCP Terminal is a terminal control server based on MCP (Model Context Protocol), designed specifically for integration with Large Language Models (LLMs) and AI assistants. It provides a standardized interface that enables AI to execute terminal commands and retrieve output results.
+
+English | [中文](README.md)
+
+</div>
 
 ## Features
 
