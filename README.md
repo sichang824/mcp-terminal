@@ -12,6 +12,10 @@ MCP Terminal 是一个基于 MCP（Model Context Protocol）的终端控制服�
 
 </div>
 
+## 演示视频
+
+[![演示视频](./docs/image.jpg)](https://player.bilibili.com/player.html?isOutside=true&aid=114488023981820&bvid=BV1agEuzGE1X&cid=29904276803&p=1)
+
 ## 特性
 
 - 使用官方 MCP SDK 实现
@@ -66,6 +70,12 @@ uv pip install -e ".[iterm]"
 # 如果需要开发工具（测试、代码格式化等）
 uv pip install -e ".[dev]"
 ```
+
+> **注意：如需使用 iTerm2 控制器，必须在 iTerm2 设置中启用 Python API。**
+>
+> 打开 iTerm2，依次进入 `Preferences` → `General` → `Magic`，勾选 **Enable Python API** 选项，如下图所示：
+>
+> ![Enable Python API in iTerm2](./docs/iterm2-enable-python-api.png)
 
 ### 使用 Makefile 安装
 

@@ -4,9 +4,17 @@
 
 MCP Terminal is a terminal control server based on MCP (Model Context Protocol), designed specifically for integration with Large Language Models (LLMs) and AI assistants. It provides a standardized interface that enables AI to execute terminal commands and retrieve output results.
 
+<a href="https://glama.ai/mcp/servers/@sichang824/mcp-terminal">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@sichang824/mcp-terminal/badge" alt="Terminal MCP server" />
+</a>
+
 English | [中文](README.md)
 
 </div>
+
+## Video
+
+[![Video](./docs/image.jpg)](https://player.bilibili.com/player.html?isOutside=true&aid=114488023981820&bvid=BV1agEuzGE1X&cid=29904276803&p=1)
 
 ## Features
 
@@ -62,6 +70,12 @@ uv pip install -e ".[iterm]"
 # If you need development tools (testing, code formatting, etc.)
 uv pip install -e ".[dev]"
 ```
+
+> **Note: To use the iTerm2 controller, you must enable the Python API in iTerm2 settings.**
+>
+> Open iTerm2, go to `Preferences` → `General` → `Magic`, and check **Enable Python API** as shown below:
+>
+> ![Enable Python API in iTerm2](./docs/iterm2-enable-python-api.png)
 
 ### Installation using Makefile
 

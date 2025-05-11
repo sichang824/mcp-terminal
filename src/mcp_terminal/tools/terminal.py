@@ -52,6 +52,14 @@ class TerminalInfoResponse(BaseModel):
 
     terminal_type: str = Field(..., description="The type of terminal being used")
     platform: str = Field(..., description="The platform the terminal is running on")
+    current_directory: str = Field(
+        ..., description="Current working directory of the terminal"
+    )
+    user: str = Field(..., description="Current user name")
+    shell: Optional[str] = Field(None, description="Shell being used")
+    terminal_size: Optional[dict] = Field(
+        None, description="Terminal dimensions (rows, columns)"
+    )
 
 
 class TerminalTool:
@@ -131,16 +139,61 @@ class TerminalTool:
 
                 # Get platform
                 import platform
+                import os
+                import getpass
+                import shutil
 
                 platform_name = platform.system()
+
+                # Get current directory directly
+                current_dir = None
+                try:
+                    pwd_result = await self.controller.execute_command(
+                        "pwd", wait_for_output=True, timeout=5
+                    )
+                    if pwd_result.get("success") and pwd_result.get("output"):
+                        # Clean the output by splitting lines and finding a valid path
+                        lines = pwd_result.get("output").splitlines()
+                        for line in lines:
+                            line = line.strip()
+                            # On macOS/Linux, a valid path should start with /
+                            if line.startswith("/"):
+                                current_dir = line
+                                break
+                except Exception as e:
+                    logger.debug(f"Error getting current directory from terminal: {e}")
+
+                # Fallback to Python's os.getcwd()
+                if not current_dir:
+                    current_dir = os.getcwd()
+
+                # Get user
+                user = getpass.getuser()
+
+                # Get shell
+                shell = os.environ.get("SHELL", None)
+
+                # Get terminal size if possible
+                terminal_size = None
+                try:
+                    cols, rows = shutil.get_terminal_size(fallback=(80, 24))
+                    terminal_size = {"rows": rows, "columns": cols}
+                except Exception:
+                    pass
 
                 return TerminalInfoResponse(
                     terminal_type=terminal_type,
                     platform=platform_name,
+                    current_directory=current_dir,
+                    user=user,
+                    shell=shell,
+                    terminal_size=terminal_size,
                 )
             except Exception as e:
                 logger.error(f"Error getting terminal info: {e}")
                 return TerminalInfoResponse(
                     terminal_type="unknown",
                     platform="unknown",
+                    current_directory="unknown",
+                    user="unknown",
                 )

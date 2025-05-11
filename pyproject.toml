@@ -13,6 +13,7 @@ authors = [
     { name = "MCP Terminal Developer" }
 ]
 dependencies = [
+    "iterm2>=2.9",
     "mcp[cli]>=1.7.1",
     "pydantic==2.10.4",
 ]
