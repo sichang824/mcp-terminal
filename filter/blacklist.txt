@@ -1,0 +1,65 @@
+# MCP Terminal Blacklist
+# This file contains blocked commands
+# Lines starting with # are comments and are ignored
+# Empty lines are also ignored
+# Regular commands match the beginning of the executed command
+# Regex patterns start with ^ and match the entire command
+
+# System modifying commands
+sudo
+su
+apt
+apt-get
+yum
+dnf
+brew
+npm
+pip
+gem
+
+# Potentially harmful commands
+rm -rf
+^rm\s+-rf.*
+chmod
+chown
+dd
+mkfs
+fdisk
+mount
+umount
+
+# Network modification
+ifconfig
+route
+iptables
+ufw
+fw
+
+# Service management
+systemctl
+service
+init
+shutdown
+reboot
+halt
+poweroff
+init
+
+# Shell escapes/command execution
+eval
+exec
+source
+bash -c
+sh -c
+python -c
+perl -e
+ruby -e
+php -r
+
+# File transfer utilities
+scp
+sftp
+ftp
+rsync
+wget
+curl 

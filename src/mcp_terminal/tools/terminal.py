@@ -4,12 +4,14 @@ Provides terminal control operations through the MCP interface.
 """
 
 import logging
+import os
 from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, Field
 
 from mcp_terminal.controllers import get_controller
+from mcp_terminal.security.command_filter import CommandFilter
 
 # Configure logging
 logging.basicConfig(
@@ -70,18 +72,34 @@ class TerminalTool:
     and get information about the terminal.
     """
 
-    def __init__(self, controller_type: Optional[str] = None):
+    def __init__(
+        self,
+        controller_type: Optional[str] = None,
+        whitelist_file: Optional[str] = None,
+        blacklist_file: Optional[str] = None,
+        whitelist_mode: bool = False,
+    ):
         """
         Initialize the terminal tool.
 
         Args:
             controller_type: The type of controller to use ("iterm", "applescript", "subprocess")
                            or None to auto-detect
+            whitelist_file: Path to whitelist file
+            blacklist_file: Path to blacklist file
+            whitelist_mode: If True, only whitelisted commands are allowed
         """
         self.name = "terminal"
         self.controller_type = controller_type
         self.controller = None
         self._init_controller()
+
+        # Initialize command filter
+        self.command_filter = CommandFilter(
+            whitelist_file=whitelist_file,
+            blacklist_file=blacklist_file,
+            whitelist_mode=whitelist_mode,
+        )
 
     def _init_controller(self):
         """Initialize the terminal controller."""
@@ -104,6 +122,18 @@ class TerminalTool:
             timeout: int = 10,
         ) -> ExecuteCommandResponse:
             try:
+                # Check if command is allowed
+                is_allowed, reason = self.command_filter.is_command_allowed(command)
+
+                if not is_allowed:
+                    logger.warning(
+                        f"Command execution denied: {command}. Reason: {reason}"
+                    )
+                    return ExecuteCommandResponse(
+                        success=False,
+                        error=f"Command not allowed: {reason}",
+                    )
+
                 # Ensure we have a controller
                 if not self.controller:
                     self._init_controller()
@@ -138,9 +168,9 @@ class TerminalTool:
                 terminal_type = await self.controller.get_terminal_type()
 
                 # Get platform
-                import platform
-                import os
                 import getpass
+                import os
+                import platform
                 import shutil
 
                 platform_name = platform.system()
