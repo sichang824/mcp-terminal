@@ -8,9 +8,13 @@ import sys
 import unittest
 from unittest import IsolatedAsyncioTestCase
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# Add both src and project root to Python path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+src_path = os.path.join(project_root, "src")
+sys.path.insert(0, project_root)
+sys.path.insert(0, src_path)
 
-from src.mcp_terminal.controllers.subprocess import SubprocessTerminalController
+from mcp_terminal.controllers.subprocess import SubprocessTerminalController
 
 
 class TestSubprocessTerminalController(IsolatedAsyncioTestCase):
