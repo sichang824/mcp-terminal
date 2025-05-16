@@ -7,11 +7,14 @@ import sys
 import tempfile
 import unittest
 
-# Add src directory to path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# Add both src and project root to Python path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+src_path = os.path.join(project_root, "src")
+sys.path.insert(0, project_root)
+sys.path.insert(0, src_path)
 
-# Direct import from file
-from src.mcp_terminal.security.command_filter import CommandFilter
+# Import from package
+from mcp_terminal.security.command_filter import CommandFilter
 
 
 class TestCommandFilter(unittest.TestCase):
