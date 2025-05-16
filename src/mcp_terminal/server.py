@@ -46,6 +46,9 @@ class MCPTerminalServer:
         host: str = "127.0.0.1",
         port: int = 3000,
         log_level: str = "INFO",
+        whitelist_file: Optional[str] = None,
+        blacklist_file: Optional[str] = None,
+        whitelist_mode: bool = False,
     ):
         """
         Initialize the MCP Terminal Server.
@@ -56,11 +59,17 @@ class MCPTerminalServer:
             host: Host to bind the server to (for SSE mode)
             port: Port to bind the server to (for SSE mode)
             log_level: Logging level
+            whitelist_file: Path to command whitelist file
+            blacklist_file: Path to command blacklist file
+            whitelist_mode: If True, only whitelisted commands are allowed
         """
         self.controller_type = controller_type
         self.mode = mode
         self.host = host
         self.port = port
+        self.whitelist_file = whitelist_file
+        self.blacklist_file = blacklist_file
+        self.whitelist_mode = whitelist_mode
 
         # Set up logging
         logging.getLogger().setLevel(getattr(logging, log_level))
@@ -82,7 +91,12 @@ class MCPTerminalServer:
 
         try:
             # Create and register the terminal tool
-            terminal_tool = TerminalTool(self.controller_type)
+            terminal_tool = TerminalTool(
+                self.controller_type,
+                whitelist_file=self.whitelist_file,
+                blacklist_file=self.blacklist_file,
+                whitelist_mode=self.whitelist_mode,
+            )
             file_tool = FileTool()
             terminal_tool.register_mcp(self.mcp)
             file_tool.register_mcp(self.mcp)
@@ -180,6 +194,24 @@ def main() -> None:
         help="Port to bind the server to in SSE mode (default: 3000)",
     )
 
+    # Command filtering options
+    security_group = parser.add_argument_group("Security Options")
+    security_group.add_argument(
+        "--whitelist-file",
+        type=str,
+        help="Path to whitelist file with allowed commands (one per line)",
+    )
+    security_group.add_argument(
+        "--blacklist-file",
+        type=str,
+        help="Path to blacklist file with blocked commands (one per line)",
+    )
+    security_group.add_argument(
+        "--whitelist-mode",
+        action="store_true",
+        help="Enable whitelist mode (only allow commands in whitelist)",
+    )
+
     # Logging options
     logging_group = parser.add_argument_group("Logging Options")
     logging_group.add_argument(
@@ -209,6 +241,9 @@ def main() -> None:
         host=args.host,
         port=args.port,
         log_level=args.log_level,
+        whitelist_file=args.whitelist_file,
+        blacklist_file=args.blacklist_file,
+        whitelist_mode=args.whitelist_mode,
     )
 
     # Run the server

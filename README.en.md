@@ -408,3 +408,56 @@ Contributions are welcome! Please follow these steps:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Security Features
+
+### Command Whitelisting and Blacklisting
+
+MCP Terminal provides security features to control which commands can be executed:
+
+- **Whitelist Mode**: Only allows execution of commands that are explicitly listed in a whitelist file.
+- **Blacklist Mode**: Blocks execution of commands that are listed in a blacklist file.
+
+#### Configuration
+
+You can configure command filtering using the following command-line options:
+
+```bash
+# Run with a blacklist (block listed commands)
+python mcp_terminal.py --blacklist-file ./examples/blacklist.txt
+
+# Run in whitelist mode (only allow listed commands)
+python mcp_terminal.py --whitelist-file ./examples/whitelist.txt --whitelist-mode
+
+# Use both whitelist and blacklist together
+python mcp_terminal.py --whitelist-file ./examples/whitelist.txt --blacklist-file ./examples/blacklist.txt --whitelist-mode
+```
+
+#### Whitelist/Blacklist File Format
+
+The whitelist and blacklist files use a simple format:
+- One command per line
+- Lines starting with `#` are treated as comments
+- Empty lines are ignored
+- Regular entries match the beginning of commands
+- Entries starting with `^` are treated as regular expressions
+
+Example whitelist file:
+```
+# Allowed commands
+ls
+pwd
+cd
+cat
+# This is a regex pattern that matches any 'git' command
+^git.*
+```
+
+Example blacklist file:
+```
+# Dangerous commands to block
+sudo
+rm -rf
+# Block any command with 'eval'
+^.*eval.*
+```

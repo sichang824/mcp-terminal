@@ -1,0 +1,59 @@
+# MCP Terminal Whitelist
+# This file contains allowed commands when running in whitelist mode
+# Lines starting with # are comments and are ignored
+# Empty lines are also ignored
+# Regular commands match the beginning of the executed command
+# Regex patterns start with ^ and match the entire command
+
+# Basic file operations
+ls
+pwd
+cd
+cat
+less
+head
+tail
+grep
+find
+mkdir
+rm
+cp
+mv
+
+# Git commands
+git
+
+# Editor commands
+nano
+vim
+vi
+emacs
+
+# File viewing and manipulation
+touch
+wc
+diff
+sed
+awk
+
+# Process management (safe ones)
+ps
+top
+htop
+
+# Network utilities (read-only)
+ping
+dig
+nslookup
+netstat
+ifconfig
+ip
+
+# System information
+uname
+whoami
+id
+date
+uptime
+df
+du 
